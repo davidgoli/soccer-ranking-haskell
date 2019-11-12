@@ -1,8 +1,8 @@
 module Parse (
   parseSeason
-  , Season
-  , GameContestant
-  , Game
+  , Season(..)
+  , GameContestant(..)
+  , Game(..)
 ) where
 
 import qualified Data.Text as T
