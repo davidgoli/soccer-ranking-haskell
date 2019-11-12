@@ -29,8 +29,10 @@ tally (Parse.Season games) = collate . toList . (foldl addGame empty) $ games
 
 addGame :: HashMap String Int -> Parse.Game -> HashMap String Int
 addGame acc game = case gameResult game of
-    Win winner loser -> insertWith (+) (Parse.name winner) 3 acc
-    Tie teamA teamB -> foldl (\h t -> insertWith (+) (Parse.name t) 1 h) acc [teamA, teamB]
+    Win winner loser -> addPoints winner 3 . addPoints loser 0 $ acc
+    Tie teamA teamB -> addPoints teamA 1 . addPoints teamB 1 $ acc
+  where
+    addPoints t = insertWith (+) (Parse.name t)
 
 main = do
   input <- getContents
