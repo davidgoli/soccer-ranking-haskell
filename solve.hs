@@ -13,9 +13,9 @@ instance Ord Standing where
     else compare p2 p1
 
 data Ranking = Ranking {
-  position :: Int
+  rank :: Int
   , standing :: Standing
-}
+} deriving (Show)
 
 data Rankings = Rankings [Ranking]
 
@@ -27,8 +27,8 @@ gameResult (Game teamA teamB)
   | (score teamB) > (score teamA) = Win teamB teamA
   | otherwise = Tie teamA teamB
 
-tally :: Parse.Season -> [Standing]
-tally (Parse.Season games) = sort . collate . toList . (foldl addGame empty) $ games
+tally :: Parse.Season -> [Ranking]
+tally (Parse.Season games) = rankStandings . sort . collate . toList . (foldl addGame empty) $ games
   where
     collate = fmap (\(k, v) -> Standing { team = k, points = v })
 
@@ -39,6 +39,22 @@ addGame acc game = case gameResult game of
     Tie teamA teamB -> addPoints teamA 1 . addPoints teamB 1 $ acc
   where
     addPoints t = insertWith (+) (Parse.name t)
+
+rankStandings :: [Standing] -> [Ranking]
+rankStandings (st:standings) = snd ranked
+  where
+    ranked :: (Int, [Ranking])
+    ranked = foldl ranker (0, [Ranking 1 st]) standings
+
+    ranker :: (Int, [Ranking]) -> Standing -> (Int, [Ranking])
+    ranker (skipped, acc) curr =
+      if points curr < points prevStanding then
+        (0, acc ++ [Ranking (rank prev + skipped + 1) curr] )
+      else
+        (skipped + 1, acc ++ [Ranking (rank prev) curr])
+      where
+        prev = last acc
+        prevStanding = standing prev
 
 main = do
   input <- getContents
