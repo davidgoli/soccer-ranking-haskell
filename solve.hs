@@ -1,10 +1,16 @@
 import Parse (parseSeason, Season(..), GameContestant(..), Game(..))
 import Data.HashMap.Strict (HashMap, empty, insertWith, toList)
+import Data.List
 
 data Standing = Standing {
   team :: String
   , points :: Int
-} deriving (Show)
+} deriving (Show, Eq)
+
+instance Ord Standing where
+  compare (Standing t1 p1) (Standing t2 p2) = if p1 == p2
+    then compare t1 t2 -- descending alphabetical order
+    else compare p2 p1
 
 data Ranking = Ranking {
   position :: Int
@@ -22,7 +28,7 @@ gameResult (Game teamA teamB)
   | otherwise = Tie teamA teamB
 
 tally :: Parse.Season -> [Standing]
-tally (Parse.Season games) = collate . toList . (foldl addGame empty) $ games
+tally (Parse.Season games) = sort . collate . toList . (foldl addGame empty) $ games
   where
     collate = fmap (\(k, v) -> Standing { team = k, points = v })
 
