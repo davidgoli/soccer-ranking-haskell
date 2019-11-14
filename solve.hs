@@ -56,8 +56,17 @@ rankStandings (st:standings) = snd ranked
         prev = last acc
         prevStanding = standing prev
 
+format :: [Ranking] -> [String]
+format [] = []
+format (r:rankings) = [teamRank ++ ". " ++ teamName ++ ", " ++ (show teamPoints) ++ suffix] ++ format rankings
+        where
+          teamRank = show $ rank r
+          teamName = team (standing r)
+          teamPoints = points (standing r)
+          suffix = if teamPoints == 1 then " pt" else " pts"
+
 main = do
   input <- getContents
   putStrLn $ case parseSeason input of
-    Right games -> show $ tally games
+    Right games -> unlines . format $ tally games
     Left err -> show err
