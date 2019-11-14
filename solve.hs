@@ -1,4 +1,4 @@
-import Parse (parseSeason, Season(..), GameContestant(..), Game(..))
+import Parse (parseSeason, Season(..), GameContestant(..), Game(..), trim)
 import Data.HashMap.Strict (HashMap, empty, insertWith, toList)
 import Data.List
 
@@ -68,5 +68,5 @@ format (r:rankings) = [teamRank ++ ". " ++ teamName ++ ", " ++ (show teamPoints)
 main = do
   input <- getContents
   putStrLn $ case parseSeason input of
-    Right games -> unlines . format $ tally games
+    Right games -> trim . unlines . format $ tally games
     Left err -> show err

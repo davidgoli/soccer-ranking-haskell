@@ -3,6 +3,7 @@ module Parse (
   , Season(..)
   , GameContestant(..)
   , Game(..)
+  , trim
 ) where
 
 import qualified Data.Text as T
