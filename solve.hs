@@ -17,8 +17,6 @@ data Ranking = Ranking {
   , standing :: Standing
 } deriving (Show)
 
-data Rankings = Rankings [Ranking]
-
 data GameResult team = Win team team | Tie team team
 
 gameResult :: Game -> GameResult GameContestant
